@@ -52,8 +52,6 @@ def jam():
     if not is_request_valid(request):
         abort(400)
 
-    update_song_map()
-
     if request.form['text']:
         PHISHIN_SONG = request.form['text']
         CLEAN_SONG = PHISHIN_SONG.replace(' ','-').lower()
@@ -64,16 +62,6 @@ def jam():
             text="Sorry, couldn't find that song. Go Phish!",
         )
 
-    if CLEAN_SONG in song_map:
-        jam_song_id = song_map[CLEAN_SONG]
-    else:
-        return jsonify(
-            response_type='in_channel',
-            text="No jamchart entry for "+PHISHIN_SONG+", that song suuucks! (Go Phish!)",
-        ) 
-
-    jam_date = get_jam_date(jam_song_id)
-
     #print("PHISHIN_URL = ",PHISHIN_URL)
     #print("PHISHIN_HEADERS = ",PHISHIN_HEADERS)
     r = requests.get(url = PHISHIN_URL, headers=PHISHIN_HEADERS)
@@ -83,6 +71,18 @@ def jam():
             response_type='in_channel',
             text="Sorry, couldn't find that song. Go Phish!",
         )
+
+    update_song_map()
+
+    if CLEAN_SONG in song_map:
+        jam_song_id = song_map[CLEAN_SONG]
+    else:
+        return jsonify(
+            response_type='in_channel',
+            text="No jamchart entry for "+PHISHIN_SONG+", that song suuucks! (Go Phish!)",
+        ) 
+
+    jam_date = get_jam_date(jam_song_id)
 
     #print("r.cookies = ",r.cookies)
     #print("r.headers = ",r.headers)
