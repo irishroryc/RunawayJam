@@ -1,2 +1,2 @@
 # RunawayJam
-Slack integration for PhishIn' jam functionality
+Workspace for Slack integration with PhishIn' jam functionality of https://github.com/spiffyrob/acdcbag
