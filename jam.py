@@ -47,6 +47,13 @@ def jam():
     print("PHISHIN_URL = ",PHISHIN_URL)
     print("PHISHIN_HEADERS = ",PHISHIN_HEADERS)
     r = requests.get(url = PHISHIN_URL, headers=PHISHIN_HEADERS)
+
+    if r.status_code == 404:
+        return jsonify(
+            response_type='in_channel',
+            text="Sorry, couldn't find that song. Go Phish!",
+        )
+
     print("r.cookies = ",r.cookies)
     print("r.headers = ",r.headers)
     #print("r.text = ",r.text)
@@ -61,14 +68,18 @@ def jam():
     track_date = track['show_date']
     track_set = track['set_name'].lower()
     track_venue = get_venue(track['show_id'])
+    track_title = track_venue+"\n"+track_date
+    track_link = "http://phish.in/"+track_date+"/"+CLEAN_SONG
     track_pretext = "Random Jamchart version of "+PHISHIN_SONG+" from "+track_venue
-    if 'notes' in track:
-        track_notes = track['notes']
-    else:
+    track_notes = None
+    for tags in track['tags']:
+        if tags['notes'] is not None:
+            track_notes = tags['notes']
+    if track_notes == None:
         track_notes = "Check out this killer "+track_set+" "+PHISHIN_SONG+"!!"
 
     return jsonify(
         response_type='in_channel',
         text=track_pretext,
-        attachments=[{'pretext':track_notes,'image_url':PHISHIN_LOGO,'title':track_date,'title_link':track_mp3}]
+        attachments=[{'pretext':track_notes,'image_url':PHISHIN_LOGO,'title':track_title,'title_link':track_link}]
     )
